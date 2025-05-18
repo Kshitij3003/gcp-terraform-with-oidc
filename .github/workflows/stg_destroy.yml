@@ -1,4 +1,4 @@
-name: Terraform Dev Destroy with OIDC
+name: Terraform STG Destroy with OIDC
 
 on:
   workflow_dispatch:  # Manual trigger via GitHub UI

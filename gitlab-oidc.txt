@@ -1,0 +1,35 @@
+1) Create OIDC provider:
+
+gcloud iam workload-identity-pools create "github-pool" \
+  --location="global" --display-name="GitHub Pool"
+
+gcloud iam workload-identity-pools providers create-oidc "github-provider" \
+  --location="global" \
+  --workload-identity-pool="github-pool" \
+  --display-name="GitHub Provider" \
+  --attribute-mapping="google.subject=assertion.sub,attribute.actor=assertion.actor,attribute.repository=assertion.repository" \
+  --attribute-condition="attribute.repository=='Kshitij3003/gcp-terraform-with-oidc'" \
+  --issuer-uri="https://token.actions.githubusercontent.com"
+
+
+2) Create Service Account & Bind:
+
+gcloud iam service-accounts create github-oidc-sa \
+  --display-name "GitHub OIDC SA"
+
+gcloud iam service-accounts add-iam-policy-binding github-oidc-sa@devops-project-458912.iam.gserviceaccount.com \
+  --role="roles/editor" \
+  --member="principalSet://iam.googleapis.com/projects/914342142012/locations/global/workloadIdentityPools/github-pool/attribute.repository/Kshitij3003/gcp-terraform-with-oidc"
+
+
+3) Allow Impersonation:
+
+gcloud iam workload-identity-pools providers describe github-provider \
+  --workload-identity-pool="github-pool" \
+  --location="global"
+
+# Get provider full name and use it in below:
+gcloud iam service-accounts add-iam-policy-binding github-oidc-sa@devops-project-458912.iam.gserviceaccount.com \
+  --role roles/iam.workloadIdentityUser \
+  --member "principalSet://iam.googleapis.com/projects/914342142012/locations/global/workloadIdentityPools/github-pool/attribute.repository/Kshitij3003/gcp-terraform-with-oidc"
+

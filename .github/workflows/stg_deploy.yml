@@ -29,9 +29,12 @@ jobs:
 
       - name: Init Terraform
         run: terraform init
+        working-directory: envs/stg
 
       - name: Plan Terraform
         run: terraform plan
+        working-directory: envs/stg
 
       - name: Apply Terraform
         run: terraform apply -auto-approve
+        working-directory: envs/stg

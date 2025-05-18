@@ -1,17 +1,14 @@
-name: Terraform STG Deploy with OIDC
+name: Terraform Dev Destroy with OIDC
 
 on:
-  push:
-    branches: [ "main" ]
-    paths:
-      - 'envs/stg/**'
+  workflow_dispatch:  # Manual trigger via GitHub UI
 
 permissions:
   id-token: write
   contents: read
 
 jobs:
-  deploy:
+  destroy:
     runs-on: ubuntu-latest
 
     steps:
@@ -27,14 +24,10 @@ jobs:
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v3
 
-      - name: Init Terraform
+      - name: Terraform Init
         run: terraform init
-        working-directory: envs/stg
+        working-directory: envs/dev
 
-      - name: Plan Terraform
-        run: terraform plan -var-file="stg.tfvars"
-        working-directory: envs/stg
-
-      - name: Apply Terraform
-        run: terraform apply -var-file="stg.tfvars" -auto-approve
-        working-directory: envs/stg
+      - name: Terraform Destroy
+        run: terraform destroy -var-file="dev.tfvars" -auto-approve
+        working-directory: envs/dev

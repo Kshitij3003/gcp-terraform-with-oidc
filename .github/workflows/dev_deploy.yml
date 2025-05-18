@@ -1,11 +1,10 @@
-name: Terraform Deploy with OIDC
+name: Terraform Dev Deploy with OIDC
 
 on:
   push:
     branches: [ "main" ]
     paths:
       - 'envs/dev/**'
-      - 'envs/stg/**'
 
 permissions:
   id-token: write

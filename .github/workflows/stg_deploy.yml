@@ -1,0 +1,37 @@
+name: Terraform STG Deploy with OIDC
+
+on:
+  push:
+    branches: [ "main" ]
+    paths:
+      - 'envs/stg/**'
+
+permissions:
+  id-token: write
+  contents: read
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repo
+        uses: actions/checkout@v3
+
+      - name: Authenticate to GCP
+        uses: google-github-actions/auth@v2
+        with:
+          workload_identity_provider: "projects/914342142012/locations/global/workloadIdentityPools/github-pool/providers/github-provider"
+          service_account: "github-oidc-sa@devops-project-458912.iam.gserviceaccount.com"
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+
+      - name: Init Terraform
+        run: terraform init
+
+      - name: Plan Terraform
+        run: terraform plan
+
+      - name: Apply Terraform
+        run: terraform apply -auto-approve
